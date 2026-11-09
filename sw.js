@@ -1,9 +1,9 @@
 const prefix = `trocki-okey:${self.registration.scope}:`;
-const cacheName = prefix + '1';
+const cacheName = prefix + '2';
 const assets = [
   './index.html', './style.css', './game.mjs', './rules.mjs', './install.js',
   './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png',
-  './icons/apple-touch-icon.png'
+  './icons/apple-touch-icon.png', './icons/players.svg'
 ];
 const cachedPaths = new Set(assets.map(asset => new URL(asset, self.registration.scope).href));
 

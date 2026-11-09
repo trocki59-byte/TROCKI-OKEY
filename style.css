@@ -34,8 +34,8 @@ h1 em{font-weight:normal;color:#edc68e}
 .table-label{font-size:.65rem;color:#f0e2c2;font-weight:650;text-align:center}
 .seat{position:absolute;z-index:1;display:flex;align-items:center;gap:6px;padding:4px 8px;background:#112c22;border:1px solid #74937b77;border-radius:24px;color:#d8e4d5;font-size:.75rem;white-space:nowrap}
 .seat.active{border-color:#e9b970;color:#ffe1a9;box-shadow:0 0 13px #d2af5b30}
-.avatar{width:25px;height:25px;display:grid;place-items:center;border-radius:50%;background:#355845;color:#f8ebcf;font-size:.74rem;font-weight:750}
-.seat.active .avatar{color:#382616;background:#edbe7b}
+.avatar{display:block;flex:none;width:26px;height:31px;border:1px solid #74937b;border-radius:5px;background:#355845}
+.seat.active .avatar{border-color:#edbe7b}
 .seat small{color:#c4d2bf;font-size:.62rem}
 .north{top:19px;left:50%;transform:translateX(-50%)}
 .south{bottom:19px;left:50%;transform:translateX(-50%)}
@@ -98,7 +98,7 @@ dialog::backdrop{background:#07110dda}
  .west{left:10px}.east{right:10px}.north{top:12px}.south{bottom:12px}
  .seat{padding:3px 5px;font-size:.69rem}
  .seat small{display:none}
- .avatar{width:21px;height:21px}
+ .avatar{width:22px;height:26px}
  .hand-panel{padding:9px}
  .rack{gap:3px;padding:5px}
  .slot{min-height:44px}

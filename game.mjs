@@ -2,6 +2,11 @@ import {colors, makeDeck, shuffle, okeyOf, isOkey, winning, chooseDiscard} from 
 
 const $ = id => document.getElementById(id);
 const names = ['Troçki', 'Deniz', 'Leyla', 'Cem'];
+const portraits = ['trocki', 'deniz', 'leyla', 'cem'];
+
+function portrait(index) {
+  return `<svg class="avatar" aria-hidden="true" focusable="false" viewBox="0 0 40 48"><use href="./icons/players.svg#${portraits[index]}"></use></svg>`;
+}
 const slots = 16;
 let scores, round, deck, indicator, key, hands, discards, player, phase;
 let selected, recent, timer, message, dragSlot, matchOver;
@@ -88,9 +93,9 @@ function render() {
     const active = player === i && phase !== 'over';
     seat.classList.toggle('active', active);
     seat.setAttribute('aria-label', active ? `Sıra ${name} adlı oyuncuda` : name);
-    seat.innerHTML = `<span class="avatar" aria-hidden="true">${name[0]}</span><b>${i === 0 ? 'Sen' : name}</b><small>${active ? 'Sıra burada' : i === 0 ? 'Oyuncu' : 'Bot'}</small>`;
+    seat.innerHTML = `${portrait(i)}<b>${i === 0 ? 'Sen' : name}</b><small>${active ? 'Sıra burada' : i === 0 ? 'Oyuncu' : 'Bot'}</small>`;
   });
-  $('scores').innerHTML = names.map((name, i) => `<li><span class="avatar" aria-hidden="true">${name[0]}</span>${name}${i === 0 ? ' (sen)' : ''}<strong>${scores[i]}</strong></li>`).join('');
+  $('scores').innerHTML = names.map((name, i) => `<li>${portrait(i)}${name}${i === 0 ? ' (sen)' : ''}<strong>${scores[i]}</strong></li>`).join('');
 }
 
 function moveTile(from, to) {
