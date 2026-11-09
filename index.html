@@ -20,6 +20,7 @@
   <a class="brand" href="./" aria-label="Okey Masası ana sayfa"><span class="monogram" aria-hidden="true">✦</span><span>TROÇKİ <em>STUDIO</em></span></a>
   <div class="header-actions">
     <button id="install" class="outline" type="button" hidden>Uygulamayı yükle</button>
+    <button id="players-menu" class="outline" type="button">Oyuncular</button>
     <button id="help" class="outline" type="button"><span aria-hidden="true">ⓘ</span> Nasıl oynanır?</button>
   </div>
 </header>
@@ -92,6 +93,25 @@
     <p><strong>iPhone:</strong> Oyunu Safari’de aç. Paylaş menüsünden <strong>Ana Ekrana Ekle</strong>’yi seç. Varsa <strong>Web Uygulaması Olarak Aç</strong> seçeneğini açık bırak ve <strong>Ekle</strong>’ye dokun.</p>
     <p><strong>Android:</strong> Chrome’da üç nokta menüsünü aç. <strong>Uygulamayı yükle</strong> veya <strong>Ana ekrana ekle</strong> seçeneğine dokun.</p>
     <form method="dialog"><button class="primary">Masaya dön</button></form>
+  </div>
+</dialog>
+<dialog id="players-dialog" aria-labelledby="players-title">
+  <div class="dialog-body roster">
+    <div>
+      <p class="eyebrow">20 BİLGİSAYAR RAKİBİ</p>
+      <h2 id="players-title">Oyuncular</h2>
+      <p class="hint">Masana üç rakip seç. Birini değiştirmek için önce seçimini kaldır.</p>
+    </div>
+    <div class="roster-bar">
+      <span id="players-count" role="status">3 / 3 seçili</span>
+      <button id="random-players" class="outline" type="button">Otomatik seç</button>
+    </div>
+    <div id="players-list" class="roster-list" role="group" aria-label="Bilgisayar rakipleri"></div>
+    <form method="dialog" class="dialog-actions roster-actions">
+      <p class="hint">Masa kurduğunda yeni maç başlar.</p>
+      <button class="outline" value="cancel">Vazgeç</button>
+      <button id="create-table" class="primary" value="start">Masa kur</button>
+    </form>
   </div>
 </dialog>
 <dialog id="rules">

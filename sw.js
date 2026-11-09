@@ -1,5 +1,5 @@
 const prefix = `trocki-okey:${self.registration.scope}:`;
-const cacheName = prefix + '2';
+const cacheName = prefix + '3';
 const assets = [
   './index.html', './style.css', './game.mjs', './rules.mjs', './install.js',
   './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png',

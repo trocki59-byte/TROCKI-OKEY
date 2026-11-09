@@ -1,12 +1,36 @@
 import {colors, makeDeck, shuffle, okeyOf, isOkey, winning, chooseDiscard} from './rules.mjs';
 
 const $ = id => document.getElementById(id);
-const names = ['Troçki', 'Deniz', 'Leyla', 'Cem'];
-const portraits = ['trocki', 'deniz', 'leyla', 'cem'];
+const humanPlayer = {id: 'trocki', name: 'Troçki'};
+const opponents = [
+  ['leyla', 'Leyla'], ['aylin', 'Aylin'], ['ece', 'Ece'], ['selin', 'Selin'],
+  ['duru', 'Duru'], ['elif', 'Elif'], ['defne', 'Defne'], ['zeynep', 'Zeynep'],
+  ['asli', 'Aslı'], ['irem', 'İrem'], ['lara', 'Lara'], ['melis', 'Melis'],
+  ['naz', 'Naz'], ['yasemin', 'Yasemin'], ['deniz', 'Deniz'], ['cem', 'Cem'],
+  ['mert', 'Mert'], ['emre', 'Emre'], ['kaan', 'Kaan'], ['baris', 'Barış']
+].map(([id, name]) => ({id, name}));
+const defaultOpponents = ['deniz', 'leyla', 'cem'];
+const opponentCount = defaultOpponents.length;
+const lineupStorageKey = 'trocki-okey-lineup';
+const opponentById = new Map(opponents.map(opponent => [opponent.id, opponent]));
+let tablePlayers = [humanPlayer, ...loadLineup().map(id => opponentById.get(id))];
+let draftLineup = [];
 
-function portrait(index) {
-  return `<svg class="avatar" aria-hidden="true" focusable="false" viewBox="0 0 40 48"><use href="./icons/players.svg#${portraits[index]}"></use></svg>`;
+function loadLineup() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(lineupStorageKey));
+    if (Array.isArray(saved) && saved.length === opponentCount &&
+        new Set(saved).size === opponentCount && saved.every(id => opponentById.has(id))) return saved;
+  } catch {
+    // The default lineup also works when browser storage is unavailable.
+  }
+  return defaultOpponents;
 }
+
+function portrait(id) {
+  return `<svg class="avatar" aria-hidden="true" focusable="false" viewBox="0 0 40 48"><use href="./icons/players.svg#${id}"></use></svg>`;
+}
+
 const slots = 16;
 let scores, round, deck, indicator, key, hands, discards, player, phase;
 let selected, recent, timer, message, dragSlot, matchOver;
@@ -23,31 +47,31 @@ function tileMarkup(tile) {
 
 function beginMatch() {
   round = 1;
-  scores = names.map(() => 20);
+  scores = tablePlayers.map(() => 20);
   matchOver = false;
   deal();
 }
 
 function deal() {
   clearTimeout(timer);
-  player = (round - 1) % names.length;
+  player = (round - 1) % tablePlayers.length;
   phase = 'discard';
   deck = shuffle(makeDeck());
   const index = deck.findIndex(tile => tile.c !== -1);
   [indicator] = deck.splice(index, 1);
   key = okeyOf(indicator);
-  hands = names.map((_, i) => deck.splice(-14 - Number(i === player)));
+  hands = tablePlayers.map((_, i) => deck.splice(-14 - Number(i === player)));
   while (hands[0].length < slots) hands[0].push(null);
-  discards = names.map(() => []);
+  discards = tablePlayers.map(() => []);
   selected = recent = dragSlot = null;
   sortHand('color');
-  message = player === 0 ? 'Sıra sende. Atacağın taşı seç.' : `${names[player]} ilk taşı atacak.`;
+  message = player === 0 ? 'Sıra sende. Atacağın taşı seç.' : `${tablePlayers[player].name} ilk taşı atacak.`;
   render();
   queueBot();
 }
 
 function previousPile() {
-  return discards[(player + names.length - 1) % names.length];
+  return discards[(player + tablePlayers.length - 1) % tablePlayers.length];
 }
 
 function sortHand(mode) {
@@ -70,7 +94,7 @@ function render() {
   $('key').innerHTML = tileMarkup(key);
   $('stock-count').textContent = deck.length;
   $('stock').disabled = !canDraw || !deck.length;
-  const left = discards[3].at(-1);
+  const left = discards.at(-1).at(-1);
   $('previous').innerHTML = left ? tileMarkup(left) : '–';
   $('previous').setAttribute('aria-label', left ? `Solundaki taşı al: ${tileLabel(left)}` : 'Solunda atılmış taş yok');
   $('previous').disabled = !canDraw || !left;
@@ -88,14 +112,14 @@ function render() {
   }).join('');
   if (oldFocus !== undefined) $('rack').querySelector(`[data-slot="${oldFocus}"]`)?.focus({preventScroll:true});
 
-  names.forEach((name, i) => {
+  tablePlayers.forEach(({id, name}, i) => {
     const seat = $(`seat-${i}`);
     const active = player === i && phase !== 'over';
     seat.classList.toggle('active', active);
     seat.setAttribute('aria-label', active ? `Sıra ${name} adlı oyuncuda` : name);
-    seat.innerHTML = `${portrait(i)}<b>${i === 0 ? 'Sen' : name}</b><small>${active ? 'Sıra burada' : i === 0 ? 'Oyuncu' : 'Bot'}</small>`;
+    seat.innerHTML = `${portrait(id)}<b>${i === 0 ? 'Sen' : name}</b><small>${active ? 'Sıra burada' : i === 0 ? 'Oyuncu' : 'Bot'}</small>`;
   });
-  $('scores').innerHTML = names.map((name, i) => `<li>${portrait(i)}${name}${i === 0 ? ' (sen)' : ''}<strong>${scores[i]}</strong></li>`).join('');
+  $('scores').innerHTML = tablePlayers.map(({id, name}, i) => `<li>${portrait(id)}${name}${i === 0 ? ' (sen)' : ''}<strong>${scores[i]}</strong></li>`).join('');
 }
 
 function moveTile(from, to) {
@@ -152,12 +176,12 @@ function discard(index, finish = false) {
   else hand.splice(index, 1);
   discards[player].push(tile);
   selected = recent = null;
-  player = (player + 1) % names.length;
+  player = (player + 1) % tablePlayers.length;
   phase = 'draw';
   if (!deck.length) return endRound();
   message = player === 0
-    ? `Cem ${tileLabel(tile)} attı. Soldan al veya desteden çek.`
-    : `Sıra ${names[player]} adlı oyuncuda.`;
+    ? `${tablePlayers.at(-1).name} ${tileLabel(tile)} attı. Soldan al veya desteden çek.`
+    : `Sıra ${tablePlayers[player].name} adlı oyuncuda.`;
   render();
   queueBot();
 }
@@ -190,9 +214,9 @@ function endRound(winner, points, win, tiles = []) {
   }
   matchOver = scores.includes(0);
   const best = Math.max(...scores);
-  const leaders = names.filter((_, i) => scores[i] === best);
-  const handResult = winner === undefined ? 'Deste tükendi' : winner === 0 ? 'Bu eli sen aldın!' : `${names[winner]} bu eli aldı`;
-  const matchResult = leaders.length > 1 ? `Birincilik paylaşıldı: ${leaders.join(', ')}` : leaders[0] === names[0] ? 'Maçı sen kazandın!' : `${leaders[0]} maçı kazandı`;
+  const leaders = tablePlayers.filter((_, i) => scores[i] === best).map(({name}) => name);
+  const handResult = winner === undefined ? 'Deste tükendi' : winner === 0 ? 'Bu eli sen aldın!' : `${tablePlayers[winner].name} bu eli aldı`;
+  const matchResult = leaders.length > 1 ? `Birincilik paylaşıldı: ${leaders.join(', ')}` : leaders[0] === humanPlayer.name ? 'Maçı sen kazandın!' : `${leaders[0]} maçı kazandı`;
   message = matchOver ? matchResult : handResult;
   render();
   $('result-kicker').textContent = matchOver ? 'MAÇ SONU' : 'EL SONU';
@@ -247,6 +271,59 @@ $('finish').addEventListener('click', () => {
   if (phase === 'over') continueMatch();
   else discard(hands[0].findIndex(tile => tile?.id === selected), true);
 });
+function renderRoster() {
+  const full = draftLineup.length === opponentCount;
+  $('players-count').textContent = `${draftLineup.length} / ${opponentCount} seçili`;
+  $('create-table').disabled = !full;
+  for (const button of $('players-list').children) {
+    const picked = draftLineup.includes(button.dataset.opponent);
+    button.setAttribute('aria-pressed', String(picked));
+    button.setAttribute('aria-disabled', String(full && !picked));
+    button.querySelector('.roster-check').textContent = picked ? '✓' : '+';
+  }
+}
+
+const roster = $('players-dialog');
+$('players-list').innerHTML = opponents.map(({id, name}) =>
+  `<button class="roster-player" type="button" data-opponent="${id}">${portrait(id)}<strong>${name}</strong><span class="roster-check" aria-hidden="true"></span></button>`
+).join('');
+
+$('players-menu').addEventListener('click', () => {
+  clearTimeout(timer);
+  draftLineup = tablePlayers.slice(1).map(({id}) => id);
+  roster.returnValue = '';
+  renderRoster();
+  roster.showModal();
+});
+
+$('players-list').addEventListener('click', event => {
+  const id = event.target.closest('[data-opponent]')?.dataset.opponent;
+  if (!id) return;
+  if (draftLineup.includes(id)) draftLineup = draftLineup.filter(item => item !== id);
+  else if (draftLineup.length < opponentCount) draftLineup.push(id);
+  renderRoster();
+});
+
+$('random-players').addEventListener('click', () => {
+  draftLineup = shuffle(opponents.map(({id}) => id)).slice(0, opponentCount);
+  renderRoster();
+});
+
+roster.addEventListener('close', () => {
+  if (roster.open) return;
+  if (roster.returnValue === 'start' && draftLineup.length === opponentCount) {
+    tablePlayers = [humanPlayer, ...draftLineup.map(id => opponentById.get(id))];
+    try {
+      localStorage.setItem(lineupStorageKey, JSON.stringify(draftLineup));
+    } catch {
+      // The chosen lineup remains active for this session.
+    }
+    beginMatch();
+  } else {
+    queueBot();
+  }
+});
+
 $('help').addEventListener('click', () => $('rules').showModal());
 $('reset').addEventListener('click', () => {
   $('confirm').returnValue = '';
