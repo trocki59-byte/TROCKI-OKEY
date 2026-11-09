@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101c18">
+<meta name="description" content="Üç bilgisayar rakibine karşı klasik Okey masası.">
+<title>Okey Masası · Troçki Studio</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Okey Masası">
+<link rel="stylesheet" href="style.css">
+<script defer src="install.js"></script>
+<script type="module" src="game.mjs"></script>
+</head>
+<body>
+<header class="masthead">
+  <a class="brand" href="./" aria-label="Okey Masası ana sayfa"><span class="monogram" aria-hidden="true">✦</span><span>TROÇKİ <em>STUDIO</em></span></a>
+  <div class="header-actions">
+    <button id="install" class="outline" type="button" hidden>Uygulamayı yükle</button>
+    <button id="help" class="outline" type="button"><span aria-hidden="true">ⓘ</span> Nasıl oynanır?</button>
+  </div>
+</header>
+<main>
+  <section class="intro" aria-labelledby="title">
+    <div>
+      <p class="eyebrow"><span></span> DÖRT KİŞİLİK KLASİK OKEY</p>
+      <h1 id="title">Okey <em>Masası</em></h1>
+    </div>
+    <div class="round-card"><small>MASA DURUMU</small><strong id="round">1. El</strong></div>
+  </section>
+  <div class="layout">
+    <div class="play">
+      <section class="table" aria-label="Oyun masası">
+        <div class="felt">
+          <div id="seat-2" class="seat north"></div>
+          <div id="seat-3" class="seat west"></div>
+          <div id="seat-1" class="seat east"></div>
+          <div class="center">
+            <div class="center-group">
+              <span class="table-label">Gösterge</span>
+              <div id="indicator"></div>
+            </div>
+            <div class="center-group">
+              <span class="table-label">Kapalı deste</span>
+              <button id="stock" class="pile" type="button" aria-label="Kapalı desteden taş çek"><span id="stock-count">48</span></button>
+            </div>
+            <div class="center-group">
+              <span class="table-label">Solundaki taş</span>
+              <button id="previous" class="draw-discard" type="button" aria-label="Solundaki taşı al"></button>
+            </div>
+          </div>
+          <div id="seat-0" class="seat south"></div>
+        </div>
+      </section>
+      <section class="hand-panel" aria-labelledby="hand-title">
+        <div class="hand-head">
+          <div><h2 id="hand-title">Istakan</h2><span id="hand-count"></span></div>
+          <div class="sort"><button id="sort-color" class="outline" type="button">Renge diz</button><button id="sort-value" class="outline" type="button">Sayıya diz</button></div>
+        </div>
+        <div id="rack" class="rack" aria-label="Elindeki taşlar"></div>
+        <div class="actions">
+          <p id="status" role="status" aria-live="polite"></p>
+          <div class="action-buttons">
+            <button id="discard" class="outline" type="button">Taş at</button>
+            <button id="finish" class="primary" type="button">Bitir <span aria-hidden="true">✦</span></button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <aside class="side" aria-label="Oyun bilgileri">
+      <section class="panel">
+        <p class="eyebrow">DÖRT OYUNCU</p>
+        <h2>Skor</h2>
+        <ol id="scores"></ol>
+        <button id="reset" class="outline reset" type="button">↻ Yeni maç</button>
+      </section>
+      <section class="panel key-panel">
+        <p class="eyebrow">BU ELİN OKEYİ</p>
+        <div class="key-content"><div id="key"></div><p>Okey, perindeki eksik taşın yerine geçebilir.</p></div>
+      </section>
+    </aside>
+  </div>
+</main>
+<footer><span>OKEY MASASI</span><span>Troçki Studio</span></footer>
+<dialog id="install-help" aria-labelledby="install-title">
+  <div class="dialog-body">
+    <p class="eyebrow">ANA EKRANA EKLE</p>
+    <h2 id="install-title">Okey Masası’nı yükle</h2>
+    <p><strong>iPhone:</strong> Oyunu Safari’de aç. Paylaş menüsünden <strong>Ana Ekrana Ekle</strong>’yi seç. Varsa <strong>Web Uygulaması Olarak Aç</strong> seçeneğini açık bırak ve <strong>Ekle</strong>’ye dokun.</p>
+    <p><strong>Android:</strong> Chrome’da üç nokta menüsünü aç. <strong>Uygulamayı yükle</strong> veya <strong>Ana ekrana ekle</strong> seçeneğine dokun.</p>
+    <form method="dialog"><button class="primary">Masaya dön</button></form>
+  </div>
+</dialog>
+<dialog id="rules">
+  <div class="dialog-body">
+    <p class="eyebrow">OYUN KILAVUZU</p><h2>Klasik Okey</h2>
+    <ol>
+      <li>Başlayan oyuncu 15 taşla bir taş atar. Sonraki oyuncular kapalı desteden ya da solundaki son atılan taştan birini alır ve bir taş atar.</li>
+      <li>14 taşını perlere ayır. Bir per, aynı renkte ardışık en az üç sayı veya aynı sayıda farklı renklerden üç ya da dört taştır. 12–13–1 geçerlidir. 13–1–2 geçersizdir.</li>
+      <li>Göstergeyle aynı renkte bir sonraki sayı okeydir. Göstergenin sayısı 13 ise okey 1 olur. Yıldızlı sahte okey, o sayının ve rengin normal taşı gibi kullanılır.</li>
+      <li>Yedi özdeş çiftle de bitebilirsin. Bitmek için atacağın taşı seç ve <strong>Bitir</strong> düğmesine bas. Kalan 14 taş otomatik kontrol edilir.</li>
+      <li>Normal bitiş diğer oyunculardan 2 puan düşürür. Çifte bitiş 4 puan düşürür. Son taş olarak okey atmak kesintiyi ikiye katlar. Bir oyuncu sıfıra inince maç sona erer. En yüksek puan kazanır.</li>
+    </ol>
+    <p class="hint">Taşlarını dizmek için bir taşı ve ardından hedef yuvayı seç. Bilgisayarda sürükleyip bırakabilirsin.</p>
+    <form method="dialog"><button class="primary">Masaya dön</button></form>
+  </div>
+</dialog>
+<dialog id="result">
+  <div class="dialog-body">
+    <p class="eyebrow" id="result-kicker"></p><h2 id="result-title"></h2>
+    <p id="result-detail"></p><div id="result-tiles" class="result-tiles"></div>
+    <div class="dialog-actions"><button id="review" class="outline" type="button">Masaya bak</button><button id="next-round" class="primary" type="button">Sonraki el</button></div>
+  </div>
+</dialog>
+<dialog id="confirm">
+  <div class="dialog-body"><h2>Yeni maç başlasın mı?</h2><p>Skorlar 20 puana dönecek.</p>
+    <form method="dialog" class="dialog-actions"><button class="outline" value="cancel">Vazgeç</button><button class="primary" value="reset">Yeni maç</button></form>
+  </div>
+</dialog>
+</body>
+</html>
